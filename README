@@ -1,0 +1,63 @@
+virtshim
+========
+
+This program is a builder for "virtshim images". These images can be used to
+boot Virtual Machines (VMs) which, in turn, automatically start other VMs on
+a layer above it using a potentially modified virtual hardware. The main use
+case is to enable virtual hardware (such as devices under development) which
+is otherwise not available on the lower-layer hypervisor. It can also simply
+replace the implementation of one virtual hardware for another (for example,
+it can replace a virtio-scsi for an LSI storage controller). The device used
+to boot the first VM is omitted from the configuration of the next VM.
+
+   +----------+
+L2 | Guest OS |
+   +----------+
+     |
+     | LSI controller
+     | (by Debian's QEMU)
+     |
+   +----------+
+L1 | virtshim |
+   +----------+
+     |
+     | virtio-scsi controller
+     | (by base hypervisor)
+     |
+   +------------+
+L0 | hypervisor |
+   +------------+
+
+These images are currently based on Debian GNU/Linux and include QEMU, a VNC
+Viewer, and an X Server. By default, it autologins root on tty1 and kick off
+the X Server, further running the VNC Viewer in a loop attempting to connect
+to a local VNC Server. In the background, systemd will start a service which
+runs QEMU with a VNC Server displaying the second VM's console. Interactions
+with the first VM's console therefore transparently shows the nested VM.
+
+To customise the QEMU options for the higher-layer Virtual Machine, edit the
+script found at src/files/usr/local/sbin/run_l2.py. Then delete the image at
+build/virtshim.qcow2 (if present) and type "make" again.
+
+Building
+========
+This builder should run on any Linux system, across different architectures,
+and only requires "curl", "make", and "docker". The virtshim images can then
+be built by running "make" on the top-level directory.
+
+License
+=======
+This project is released under the GNU GPL v2 or newer. See the COPYING file
+at the top-level directory.
+
+Support
+=======
+Per the GNU GPLv2 license, this project hopes to be useful but comes WITHOUT
+ANY WARRANTY. See the license for more details. Issues may be raised against
+the project's GitHub page and best-effort will be given to help support it.
+
+README Formatting Disclaimer
+============================
+No effort was made to align this README document at a 76-character boundary,
+but considering that it entirely accidentally made it thus far, it will most
+likely continue to do so.

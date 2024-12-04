@@ -1,0 +1,10 @@
+[Unit]
+Description=Run the L2 guest
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/run_l2.py
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
