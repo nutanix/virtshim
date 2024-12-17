@@ -226,7 +226,7 @@ def main():
     if pid == 0:
         # Child.
         os.execv(qemu_cmdline[0], qemu_cmdline)
-        os.exit(1)
+        os._exit(1)
 
     try:
         os.waitpid(pid, 0)
