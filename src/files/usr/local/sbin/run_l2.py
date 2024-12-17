@@ -187,6 +187,12 @@ def main():
     blk_devs = get_blk_devs()
     tap_devs = get_net_taps()
 
+    prod_uuid_path = '/sys/class/dmi/id/product_uuid'
+    prod_uuid = None
+    if os.path.exists(prod_uuid_path):
+        with open(prod_uuid_path, 'r', encoding='utf-8') as fpe:
+            prod_uuid = fpe.read().strip()
+
     qemu_cmdline = [
         '/usr/bin/qemu-system-x86_64',
         '-vnc', '127.0.0.1:0',
@@ -197,6 +203,9 @@ def main():
         '-m', f'{vm_mem_mb}',
         '-device', 'pvscsi,id=scsi0',
     ]
+
+    if prod_uuid is not None:
+        qemu_cmdline.extend(['-smbios', f'type=1,uuid={prod_uuid}'])
 
     for idx, blk_dev in enumerate(blk_devs):
         qemu_cmdline.extend([
