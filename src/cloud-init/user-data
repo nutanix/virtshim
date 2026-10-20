@@ -28,6 +28,7 @@ packages:
   - qemu-system-x86
   - xorg
   - tigervnc-viewer
+  - matchbox-window-manager
 runcmd:
   - [ /usr/bin/systemctl, enable, run_l2 ]
   - [ /usr/sbin/halt, -p ]

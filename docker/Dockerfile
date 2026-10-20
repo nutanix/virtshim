@@ -18,6 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see https://www.gnu.org/licenses/.
 
-FROM debian:12
+FROM debian:13
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
     qemu-system-x86 genisoimage
