@@ -42,10 +42,15 @@ docker:
 	docker build -t virtshim docker/
 .PHONY: docker
 
-$(OUTPUT):
+$(OUTPUT): $(shell find src -type f)
 	docker/run.sh "/src/make-virtshim.sh $(UID) $(QCOW2) virtshim.qcow2"
 
 $(QCOW2_PATH):
 	curl -Lo $(QCOW2_PATH) $(QCOW2_URL)
+
+clean:
+	-rm $(QCOW2_PATH)
+	-rm $(OUTPUT)
+	-docker image rm virtshim:latest
 
 # vim: noet
