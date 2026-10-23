@@ -18,7 +18,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see https://www.gnu.org/licenses/.
-
+matchbox-window-manager -use_titlebar no &
 while true; do
   /usr/bin/xtigervncviewer -FullScreen -ReconnectOnError=0 -AlertOnFatalError=0 0:5900
   sleep 0.5

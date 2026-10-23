@@ -19,11 +19,11 @@
 # along with this program; if not, see https://www.gnu.org/licenses/.
 
 # Debian setup.
-DEBIAN_FAMILY ?= bookworm
-DEBIAN_MAJOR ?= 12
+DEBIAN_FAMILY ?= trixie
+DEBIAN_MAJOR ?= 13
 DEBIAN_ARCH ?= amd64
 DEBIAN_FLAVOUR ?= generic
-DEBIAN_BUILD ?= 20241201-1948
+DEBIAN_BUILD ?= latest
 
 SOURCE_IMAGES = source_images
 SCRATCH = scratch
@@ -31,7 +31,11 @@ BUILD = build
 
 UID = $(shell /usr/bin/id -u)
 BASE_URL = https://cdimage.debian.org/images/cloud/$(DEBIAN_FAMILY)/$(DEBIAN_BUILD)
-QCOW2 = debian-$(DEBIAN_MAJOR)-$(DEBIAN_FLAVOUR)-$(DEBIAN_ARCH)-$(DEBIAN_BUILD).qcow2
+ifeq ($(DEBIAN_BUILD), latest)
+	QCOW2 = debian-$(DEBIAN_MAJOR)-$(DEBIAN_FLAVOUR)-$(DEBIAN_ARCH).qcow2
+else
+	QCOW2 = debian-$(DEBIAN_MAJOR)-$(DEBIAN_FLAVOUR)-$(DEBIAN_ARCH)-$(DEBIAN_BUILD).qcow2
+endif
 QCOW2_URL = $(BASE_URL)/$(QCOW2)
 QCOW2_PATH = $(SOURCE_IMAGES)/$(QCOW2)
 OUTPUT = build/virtshim.qcow2
@@ -42,10 +46,15 @@ docker:
 	docker build -t virtshim docker/
 .PHONY: docker
 
-$(OUTPUT):
+$(OUTPUT): $(shell find src -type f)
 	docker/run.sh "/src/make-virtshim.sh $(UID) $(QCOW2) virtshim.qcow2"
 
 $(QCOW2_PATH):
 	curl -Lo $(QCOW2_PATH) $(QCOW2_URL)
+
+clean:
+	-rm $(QCOW2_PATH)
+	-rm $(OUTPUT)
+	-docker image rm virtshim:latest
 
 # vim: noet
